@@ -527,7 +527,7 @@ public class UpdatesSettings extends PreferenceFragment implements
         mUpdatesList.removeAll();
 
         // Convert the installed version name to the associated filename
-        String installedZip = "lineage-" + Utils.getInstalledVersion() + ".zip";
+        String installedZip = "sm-" + Utils.getInstalledVersion() + ".zip";
 
         // Convert LinkedList to HashMap, keyed on filename.
         HashMap<String, UpdateInfo> updatesMap = new HashMap<String, UpdateInfo>();
@@ -547,7 +547,7 @@ public class UpdatesSettings extends PreferenceFragment implements
             if (isDownloading) {
                 // In progress download
                 style = UpdatePreference.STYLE_DOWNLOADING;
-            } else if (ui.getFileName().replace("-signed", "").equals(installedZip)) {
+            } else if (ui.getFileName().equals(installedZip)) {
                 // This is the currently installed version
                 style = UpdatePreference.STYLE_INSTALLED;
             } else if (ui.getDownloadUrl() != null) {

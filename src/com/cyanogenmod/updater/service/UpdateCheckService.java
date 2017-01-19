@@ -216,15 +216,13 @@ public class UpdateCheckService extends IntentService
     }
 
     private URI getServerURI() {
-        String updateUri = SystemProperties.get("cm.updater.uri");
-        if (TextUtils.isEmpty(updateUri)) {
-            updateUri = getString(R.string.conf_update_server_url_def);
+        String propertyUpdateUri = SystemProperties.get("cm.updater.uri");
+        if (!TextUtils.isEmpty(propertyUpdateUri)) {
+            return URI.create(propertyUpdateUri);
         }
 
-        String incrementalVersion = SystemProperties.get("ro.build.version.incremental");
-        updateUri += "/v1/" + Utils.getDeviceType() + "/" + getRomType() + "/" + incrementalVersion;
-
-        return URI.create(updateUri);
+        String configUpdateUri = getString(R.string.conf_update_server_url_def);
+        return URI.create(configUpdateUri);
     }
 
     private void getAvailableUpdates() {
