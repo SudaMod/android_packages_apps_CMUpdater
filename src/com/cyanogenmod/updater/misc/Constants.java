@@ -38,8 +38,5 @@ public class Constants {
 
     // ro.cm.releasetype values
     public static final String PROPERTY_CM_RELEASETYPE = "ro.sm.releasetype";
-    public static final String CM_RELEASETYPE_SNAPSHOT = "SNAPSHOT";
-    public static final String CM_RELEASETYPE_NIGHTLY = "NIGHTLY";
-    public static final String CM_RELEASETYPE_EXPERIMENTAL = "EXPERIMENTAL";
-    public static final String CM_RELEASETYPE_UNOFFICIAL = "UNOFFICIAL";
+    public static final String CM_RELEASETYPE_OTA = "UNOFFICIAL";
 }

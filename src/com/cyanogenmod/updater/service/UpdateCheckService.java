@@ -207,31 +207,24 @@ public class UpdateCheckService extends IntentService
     private String getRomType() {
         String type;
         switch (Utils.getUpdateType()) {
-            case Constants.UPDATE_TYPE_SNAPSHOT:
-                type = Constants.CM_RELEASETYPE_SNAPSHOT;
-                break;
-            case Constants.UPDATE_TYPE_NIGHTLY:
-                type = Constants.CM_RELEASETYPE_NIGHTLY;
-                break;
-            case Constants.UPDATE_TYPE_EXPERIMENTAL:
-                type = Constants.CM_RELEASETYPE_EXPERIMENTAL;
-                break;
-            case Constants.UPDATE_TYPE_UNOFFICIAL:
+            case Constants.UPDATE_TYPE_OTA:
             default:
-                type = Constants.CM_RELEASETYPE_UNOFFICIAL;
+                type = Constants.CM_RELEASETYPE_OTA;
                 break;
         }
         return type.toLowerCase();
     }
 
     private URI getServerURI() {
-        String propertyUpdateUri = SystemProperties.get("cm.updater.uri");
-        if (!TextUtils.isEmpty(propertyUpdateUri)) {
-            return URI.create(propertyUpdateUri);
+        String updateUri = SystemProperties.get("sm.ota.uri");
+        if (TextUtils.isEmpty(updateUri)) {
+            updateUri = getString(R.string.conf_update_server_url_def);
         }
 
-        String configUpdateUri = getString(R.string.conf_update_server_url_def);
-        return URI.create(configUpdateUri);
+        String incrementalVersion = SystemProperties.get("ro.build.version.incremental");
+        updateUri += "/v1/" + Utils.getDeviceType() + "/" + getRomType() + "/" + incrementalVersion;
+
+        return URI.create(updateUri);
     }
 
     private void getAvailableUpdates() {

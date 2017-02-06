@@ -27,10 +27,7 @@ public class UpdateInfo implements Parcelable, Serializable {
 
     public enum Type {
         UNKNOWN,
-        STABLE,
-        RC,
-        SNAPSHOT,
-        NIGHTLY
+		OTA
     };
     private String mUiName;
     private String mFileName;
@@ -209,14 +206,8 @@ public class UpdateInfo implements Parcelable, Serializable {
 
         public Builder setType(String typeString) {
             Type type;
-            if (TextUtils.equals(typeString, "stable")) {
-                type = UpdateInfo.Type.STABLE;
-            } else if (TextUtils.equals(typeString, "RC")) {
-                type = UpdateInfo.Type.RC;
-            } else if (TextUtils.equals(typeString, "snapshot")) {
-                type = UpdateInfo.Type.SNAPSHOT;
-            } else if (TextUtils.equals(typeString, "nightly")) {
-                type = UpdateInfo.Type.NIGHTLY;
+            } else if (TextUtils.equals(typeString, "ota")) {
+                type = UpdateInfo.Type.OTA;
             } else {
                 type = UpdateInfo.Type.UNKNOWN;
             }
