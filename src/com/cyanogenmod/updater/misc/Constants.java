@@ -31,12 +31,9 @@ public class Constants {
     public static final int UPDATE_FREQ_MONTHLY = 2419200;
 
     // Update types
-    public static final int UPDATE_TYPE_SNAPSHOT = 0;
-    public static final int UPDATE_TYPE_NIGHTLY = 1;
-    public static final int UPDATE_TYPE_EXPERIMENTAL = 2;
-    public static final int UPDATE_TYPE_UNOFFICIAL = 3;
+    public static final int UPDATE_TYPE_OTA = 0;
 
     // ro.cm.releasetype values
-    public static final String PROPERTY_CM_RELEASETYPE = "ro.sm.releasetype";
-    public static final String CM_RELEASETYPE_OTA = "UNOFFICIAL";
+    public static final String PROPERTY_CM_RELEASETYPE = "ro.sm.ota";
+    public static final String CM_RELEASETYPE_OTA = "OTA";
 }

@@ -206,7 +206,7 @@ public class UpdateInfo implements Parcelable, Serializable {
 
         public Builder setType(String typeString) {
             Type type;
-            } else if (TextUtils.equals(typeString, "ota")) {
+            if (TextUtils.equals(typeString, "ota")) {
                 type = UpdateInfo.Type.OTA;
             } else {
                 type = UpdateInfo.Type.UNKNOWN;

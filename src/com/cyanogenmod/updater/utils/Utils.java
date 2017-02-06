@@ -157,23 +157,14 @@ public class Utils {
         try {
             releaseType = SystemProperties.get(Constants.PROPERTY_CM_RELEASETYPE);
         } catch (IllegalArgumentException e) {
-            releaseType = Constants.CM_RELEASETYPE_UNOFFICIAL;
+            releaseType = Constants.CM_RELEASETYPE_OTA;
         }
 
         int updateType;
         switch (releaseType) {
-            case Constants.CM_RELEASETYPE_SNAPSHOT:
-                updateType = Constants.UPDATE_TYPE_SNAPSHOT;
-                break;
-            case Constants.CM_RELEASETYPE_NIGHTLY:
-                updateType = Constants.UPDATE_TYPE_NIGHTLY;
-                break;
-            case Constants.CM_RELEASETYPE_EXPERIMENTAL:
-                updateType = Constants.UPDATE_TYPE_EXPERIMENTAL;
-                break;
-            case Constants.CM_RELEASETYPE_UNOFFICIAL:
+            case Constants.CM_RELEASETYPE_OTA:
             default:
-                updateType = Constants.UPDATE_TYPE_UNOFFICIAL;
+                updateType = Constants.UPDATE_TYPE_OTA;
                 break;
         }
         return updateType;
