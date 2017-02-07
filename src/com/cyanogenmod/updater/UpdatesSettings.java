@@ -147,7 +147,7 @@ public class UpdatesSettings extends PreferenceFragment implements
         // Force a refresh if UPDATE_TYPE_PREF does not match release type
         int updateType = Utils.getUpdateType();
         int updateTypePref = mPrefs.getInt(Constants.UPDATE_TYPE_PREF,
-                Constants.UPDATE_TYPE_SNAPSHOT);
+                Constants.UPDATE_TYPE_OTA);
         if (updateTypePref != updateType) {
             updateUpdatesType(updateType);
         }
@@ -527,7 +527,7 @@ public class UpdatesSettings extends PreferenceFragment implements
         mUpdatesList.removeAll();
 
         // Convert the installed version name to the associated filename
-        String installedZip = "sm-" + Utils.getInstalledVersion() + ".zip";
+        String installedZip = "sudamod-" + Utils.getInstalledVersion() + ".zip";
 
         // Convert LinkedList to HashMap, keyed on filename.
         HashMap<String, UpdateInfo> updatesMap = new HashMap<String, UpdateInfo>();
