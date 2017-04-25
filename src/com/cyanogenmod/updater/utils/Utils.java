@@ -113,6 +113,8 @@ public class Utils {
         switch (versionName) {
             case "71.1":
                 return "7.1";
+            case "71.2":
+                return "7.1";
             default:
                 return "???";
         }
