@@ -112,9 +112,9 @@ public class Utils {
     public static String getAndroidVersion(String versionName) {
         switch (versionName) {
             case "71.1":
-                return "7.1";
+                return "7.1.1";
             case "71.2":
-                return "7.1";
+                return "7.1.2";
             default:
                 return "???";
         }
