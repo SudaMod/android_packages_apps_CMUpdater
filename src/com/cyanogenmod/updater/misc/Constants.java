@@ -20,7 +20,7 @@ public class Constants {
     // Preferences
     public static final String ENABLE_PREF = "pref_enable_updates";
     public static final String UPDATE_CHECK_PREF = "pref_update_check_interval";
-    public static final String UPDATE_TYPE_PREF = "pref_update_types";
+    public static final String UPDATE_TYPE_PREF = "pref_update_type";
     public static final String LAST_UPDATE_CHECK_PREF = "pref_last_update_check";
 
     // Update Check items
@@ -31,10 +31,10 @@ public class Constants {
     public static final int UPDATE_FREQ_BI_WEEKLY = 1209600;
     public static final int UPDATE_FREQ_MONTHLY = 2419200;
 
-    // Update types
-    public static final int UPDATE_TYPE_OTA = 0;
-
-    // ro.cm.releasetype values
+    // Properties
     public static final String PROPERTY_CM_RELEASETYPE = "ro.sm.ota";
-    public static final String CM_RELEASETYPE_OTA = "OTA";
+
+    // Defaults
+    public static final String CM_UPDATE_TYPE_DEFAULT = "OTA";
+    public static final String CM_RELEASE_TYPE_DEFAULT = "UNOTA";
 }

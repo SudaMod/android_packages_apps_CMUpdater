@@ -15,6 +15,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.cyanogenmod.updater.utils.Utils;
+import com.cyanogenmod.updater.misc.Constants;
 
 import java.io.File;
 import java.io.Serializable;
@@ -25,17 +26,14 @@ public class UpdateInfo implements Parcelable, Serializable {
     private static final long serialVersionUID = 5499890003569313403L;
     public static final String CHANGELOG_EXTENSION = ".changelog.html";
 
-    public enum Type {
-        UNKNOWN,
-		OTA
-    };
     private String mUiName;
     private String mFileName;
-    private Type mType;
+    private String mType;
     private int mApiLevel;
     private long mBuildDate;
     private String mDownloadUrl;
     private String mChangelogUrl;
+    private String mVersion;
 
     private Boolean mIsNewerThanInstalled;
 
@@ -82,7 +80,7 @@ public class UpdateInfo implements Parcelable, Serializable {
     /**
      * Get build type
      */
-    public Type getType() {
+    public String getType() {
         return mType;
     }
 
@@ -107,6 +105,13 @@ public class UpdateInfo implements Parcelable, Serializable {
         return mChangelogUrl;
     }
 
+    /**
+     * Get version
+     */
+    public String getVersion() {
+        return mVersion;
+    }
+
     public boolean isNewerThanInstalled() {
         if (mIsNewerThanInstalled != null) {
             return mIsNewerThanInstalled;
@@ -121,6 +126,30 @@ public class UpdateInfo implements Parcelable, Serializable {
         }
 
         return mIsNewerThanInstalled;
+    }
+
+    public boolean isSameVersion(String version) {
+        if (version == null) {
+            return false;
+        }
+
+        if (version.equals(mVersion)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isCompatible(UpdateInfo update) {
+        if (this.equals(update)) {
+            return true;
+        }
+        if (!isSameVersion(update.getVersion())) {
+            return false;
+        }
+        // XXXX Add other checks here
+
+        return true;
     }
 
     public static String extractUiName(String fileName) {
@@ -146,7 +175,7 @@ public class UpdateInfo implements Parcelable, Serializable {
 
         UpdateInfo ui = (UpdateInfo) o;
         return TextUtils.equals(mFileName, ui.mFileName)
-                && mType.equals(ui.mType)
+                && TextUtils.equals(mType, ui.mType)
                 && mBuildDate == ui.mBuildDate
                 && TextUtils.equals(mDownloadUrl, ui.mDownloadUrl);
     }
@@ -170,29 +199,32 @@ public class UpdateInfo implements Parcelable, Serializable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeString(mUiName);
         out.writeString(mFileName);
-        out.writeString(mType.toString());
+        out.writeString(mType);
         out.writeInt(mApiLevel);
         out.writeLong(mBuildDate);
         out.writeString(mDownloadUrl);
+        out.writeString(mVersion);
     }
 
     private void readFromParcel(Parcel in) {
         mUiName = in.readString();
         mFileName = in.readString();
-        mType = Enum.valueOf(Type.class, in.readString());
+        mType = in.readString();
         mApiLevel = in.readInt();
         mBuildDate = in.readLong();
         mDownloadUrl = in.readString();
+        mVersion = in.readString();
     }
 
     public static class Builder {
         private String mUiName;
         private String mFileName;
-        private Type mType = Type.UNKNOWN;
+        private String mType;
         private int mApiLevel;
         private long mBuildDate;
         private String mDownloadUrl;
         private String mChangelogUrl;
+        private String mVersion;
 
         public Builder setName(String uiName) {
             mUiName = uiName;
@@ -204,18 +236,7 @@ public class UpdateInfo implements Parcelable, Serializable {
             return this;
         }
 
-        public Builder setType(String typeString) {
-            Type type;
-            if (TextUtils.equals(typeString, "ota")) {
-                type = UpdateInfo.Type.OTA;
-            } else {
-                type = UpdateInfo.Type.UNKNOWN;
-            }
-            mType = type;
-            return this;
-        }
-
-        public Builder setType(Type type) {
+        public Builder setType(String type) {
             mType = type;
             return this;
         }
@@ -240,6 +261,11 @@ public class UpdateInfo implements Parcelable, Serializable {
             return this;
         }
 
+        public Builder setVersion(String version) {
+            mVersion = version;
+            return this;
+        }
+
         public UpdateInfo build() {
             UpdateInfo info = new UpdateInfo();
             info.mUiName = mUiName;
@@ -249,6 +275,7 @@ public class UpdateInfo implements Parcelable, Serializable {
             info.mBuildDate = mBuildDate;
             info.mDownloadUrl = mDownloadUrl;
             info.mChangelogUrl = mChangelogUrl;
+            info.mVersion = mVersion;
             return info;
         }
 

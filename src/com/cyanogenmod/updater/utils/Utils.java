@@ -26,6 +26,7 @@ import android.util.Log;
 
 import com.cyanogenmod.updater.R;
 import com.cyanogenmod.updater.misc.Constants;
+import com.cyanogenmod.updater.misc.UpdateInfo;
 import com.cyanogenmod.updater.service.UpdateCheckService;
 
 import java.io.File;
@@ -35,6 +36,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class Utils {
 
@@ -60,7 +63,7 @@ public class Utils {
     }
 
     public static String getInstalledVersion() {
-        return SystemProperties.get("ro.sm.version");
+        return SystemProperties.get("ro.sm.version").toLowerCase();
     }
 
     public static String getInstalledVersionName() {
@@ -76,7 +79,18 @@ public class Utils {
     }
 
     public static String getInstalledBuildType() {
-        return SystemProperties.get("ro.cm.releasetype", Constants.CM_RELEASETYPE_OTA);
+        return SystemProperties.get(Constants.PROPERTY_CM_RELEASETYPE,
+                Constants.CM_RELEASE_TYPE_DEFAULT).toLowerCase();
+    }
+
+    public static UpdateInfo getInstalledUpdateInfo() {
+        return new UpdateInfo.Builder()
+            .setFileName("sudamod-" + getInstalledVersion() + ".zip")
+            .setVersion(getInstalledVersionName())
+            .setApiLevel(getInstalledApiLevel())
+            .setBuildDate(getInstalledBuildDate())
+            .setType(getInstalledBuildType())
+            .build();
     }
 
     public static String getDateLocalized(Context context, long unixTimestamp) {
@@ -96,28 +110,43 @@ public class Utils {
             Log.e(TAG, "The given filename is not valid: " + fileName);
             return 0;
         }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         try {
-            int year = Integer.parseInt(subStrings[2].substring(0, 4));
-            int month = Integer.parseInt(subStrings[2].substring(4, 6)) - 1;
-            int day = Integer.parseInt(subStrings[2].substring(6, 8));
-            Calendar cal = Calendar.getInstance();
-            cal.set(year, month, day);
-            return cal.getTimeInMillis() / 1000;
-        } catch (NumberFormatException e) {
+            return (dateFormat.parse(subStrings[2]).getTime() / 1000);
+        } catch (ParseException e) {
             Log.e(TAG, "The given filename is not valid: " + fileName);
             return 0;
         }
     }
 
     public static String getAndroidVersion(String versionName) {
-        switch (versionName) {
-            case "71.1":
-                return "7.1.1";
-            case "71.2":
-                return "7.1.2";
-            default:
-                return "???";
+        if (versionName != null) {
+            switch (versionName) {
+                case "71.1":
+                    return "7.1.1";
+                case "71.2":
+                    return "7.1.2";
+            }
         }
+        return "???";
+    }
+
+    public static String getVersionFromFileName(String fileName) {
+        String[] subStrings = fileName.split("-");
+        if (subStrings.length < 2 || subStrings[1].length() < 4) {
+            Log.e(TAG, "The given filename is not valid: " + fileName);
+            return "????";
+        }
+        return subStrings[1];
+    }
+
+    public static String getTypeFromFileName(String fileName) {
+        String[] subStrings = fileName.split("-");
+        if (subStrings.length < 4 || subStrings[3].length() < 7) {
+           Log.e(TAG, "The given filename is not valid: " + fileName);
+           return "???????";
+        }
+        return subStrings[3];
     }
 
     public static String getUserAgentString(Context context) {
@@ -166,31 +195,8 @@ public class Utils {
         android.os.RecoverySystem.installPackage(context, new File(updatePackagePath));
     }
 
-    public static int getUpdateType() {
-        String releaseType;
-        try {
-            releaseType = SystemProperties.get(Constants.PROPERTY_CM_RELEASETYPE);
-        } catch (IllegalArgumentException e) {
-            releaseType = Constants.CM_RELEASETYPE_OTA;
-        }
-
-        int updateType;
-        switch (releaseType) {
-            case Constants.CM_RELEASETYPE_OTA:
-            default:
-                updateType = Constants.UPDATE_TYPE_OTA;
-                break;
-        }
-        return updateType;
-    }
-
-    public static String buildTypeToString(int type) {
-        switch (type) {
-            case Constants.UPDATE_TYPE_OTA:
-                return Constants.CM_RELEASETYPE_OTA;
-            default:
-                return Constants.CM_RELEASETYPE_OTA;
-        }
+    public static String getUpdateType() {
+        return getInstalledBuildType();
     }
 
     public static Locale getCurrentLocale(Context context) {

@@ -31,6 +31,10 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -127,6 +131,8 @@ public class UpdatesSettings extends PreferenceFragmentCompat implements
 
         // Load the stored preference data
         mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        cleanupPrefs();
+
         if (mUpdateCheck != null) {
             int check = mPrefs.getInt(Constants.UPDATE_CHECK_PREF, Constants.UPDATE_FREQ_WEEKLY);
             mUpdateCheck.setValue(String.valueOf(check));
@@ -135,10 +141,10 @@ public class UpdatesSettings extends PreferenceFragmentCompat implements
         }
 
         // Force a refresh if UPDATE_TYPE_PREF does not match release type
-        int updateType = Utils.getUpdateType();
-        int updateTypePref = mPrefs.getInt(Constants.UPDATE_TYPE_PREF,
-                Constants.UPDATE_TYPE_OTA);
-        if (updateTypePref != updateType) {
+        String updateType = Utils.getUpdateType();
+        String updateTypePref = mPrefs.getString(Constants.UPDATE_TYPE_PREF,
+                Constants.CM_UPDATE_TYPE_DEFAULT);
+        if (!TextUtils.equals(updateTypePref, updateType)) {
             updateUpdatesType(updateType);
         }
     }
@@ -367,8 +373,8 @@ public class UpdatesSettings extends PreferenceFragmentCompat implements
                 .show();
     }
 
-    private void updateUpdatesType(int type) {
-        mPrefs.edit().putInt(Constants.UPDATE_TYPE_PREF, type).apply();
+    private void updateUpdatesType(String type) {
+        mPrefs.edit().putString(Constants.UPDATE_TYPE_PREF, type).apply();
         checkForUpdates();
     }
 
@@ -474,7 +480,12 @@ public class UpdatesSettings extends PreferenceFragmentCompat implements
         final LinkedList<UpdateInfo> updates = new LinkedList<UpdateInfo>();
 
         for (String fileName : existingFiles) {
-            updates.add(new UpdateInfo.Builder().setFileName(fileName).build());
+            updates.add(new UpdateInfo.Builder()
+                    .setFileName(fileName)
+                    .setVersion(Utils.getVersionFromFileName(fileName))
+                    .setBuildDate(Utils.getTimestampFromFileName(fileName))
+                    .setType(Utils.getTypeFromFileName(fileName))
+                    .build());
         }
         for (UpdateInfo update : availableUpdates) {
             // Only add updates to the list that are not already downloaded
@@ -534,6 +545,8 @@ public class UpdatesSettings extends PreferenceFragmentCompat implements
             return;
         }
 
+        UpdateInfo current = Utils.getInstalledUpdateInfo();
+
         // Clear the list
         mUpdatesList.removeAll();
 
@@ -546,7 +559,9 @@ public class UpdatesSettings extends PreferenceFragmentCompat implements
             boolean isDownloading = ui.getFileName().equals(mFileName);
             int style;
 
-            if (isDownloading) {
+            if (!current.isCompatible(ui)) {
+                style = UpdatePreference.STYLE_BLOCKED;
+            } else if (isDownloading) {
                 // In progress download
                 style = UpdatePreference.STYLE_DOWNLOADING;
             } else if (isDownloadCompleting(ui.getFileName())) {
@@ -724,5 +739,27 @@ public class UpdatesSettings extends PreferenceFragmentCompat implements
 
     private void showSnack(String mMessage) {
         ((UpdatesActivity) getActivity()).showSnack(mMessage);
+    }
+
+    // Remove unused preference settings
+    public void cleanupPrefs() {
+        if (mPrefs.getInt("pref_update_types", -1) != -1) {
+            mPrefs.edit().remove("pref_update_types").apply();
+            Log.d(TAG, "Removed stale preference 'pref_update_types'");
+        }
+    }
+
+    @Override
+    public void onDisplayInfo(UpdatePreference pref) {
+        Spanned message = Html.fromHtml(
+                getString(R.string.blocked_update_dialog_message,
+                getString(R.string.blocked_update_info_url)));
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.blocked_update_dialog_title)
+                .setPositiveButton(android.R.string.ok, null)
+                .setMessage(message)
+                .show();
+        TextView content = (TextView) dialog.findViewById(android.R.id.message);
+        content.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }
