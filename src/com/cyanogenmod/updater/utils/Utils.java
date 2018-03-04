@@ -134,10 +134,10 @@ public class Utils {
     public static String getAndroidVersion(String versionName) {
         if (versionName != null) {
             switch (versionName) {
-                case "71.1":
-                    return "7.1.1";
-                case "71.2":
-                    return "7.1.2";
+                case "81.0":
+                    return "8.1.0";
+                case "81.1":
+                    return "8.1.1";
             }
         }
         return "???";
@@ -253,7 +253,7 @@ public class Utils {
                                         "install/bin/otasigcheck.sh",
                                         "system.patch.dat",
                                         "system/build.prop",
-                                        "META-INF/org/lineageos/releasekey",
+                                        "META-INF/org/sudamod/releasekey",
                                         "META-INF/com/google/android/updater-script",
                                         "META-INF/com/google/android/update-binary",
                                         "system.new.dat",
