@@ -56,7 +56,7 @@ import com.cyanogenmod.updater.service.UpdateCheckService;
 import com.cyanogenmod.updater.utils.UpdateFilter;
 import com.cyanogenmod.updater.utils.Utils;
 
-import org.cyanogenmod.internal.util.ScreenType;
+import org.lineageos.internal.util.ScreenType;
 
 import java.io.File;
 import java.io.IOException;
